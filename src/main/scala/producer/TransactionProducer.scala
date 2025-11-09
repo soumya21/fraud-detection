@@ -13,43 +13,31 @@ object TransactionProducer extends App {
   props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
   props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer])
   props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer])
-  props.put(ProducerConfig.ACKS_CONFIG, "all")
-  props.put(ProducerConfig.LINGER_MS_CONFIG, "10")
-  props.put(ProducerConfig.RETRIES_CONFIG, "3")
 
   val producer = new KafkaProducer[String, String](props)
   val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
   val topic = "transactions"
 
-  sys.addShutdownHook {
-    println("🛑 Shutting down producer...")
-    producer.flush()
-    producer.close()
-  }
-
-  println("🚀 TransactionProducer started ...")
+  val locations = Seq("US", "IN", "UK", "CN")
 
   while (true) {
     val txn = Transaction(
       java.util.UUID.randomUUID().toString,
-      "user-" + Random.nextInt(100),
-      10.0 + (Random.nextDouble() * (20000.0 - 10.0)),
-      Seq("IN", "US", "UK", "CN").apply(Random.nextInt(4)),
+      "user-" + Random.nextInt(10), // smaller user pool to trigger Rule1
+      10.0 + Random.nextDouble() * 20000.0, // some large values to trigger Rule5
+      locations(Random.nextInt(locations.size)), // random location
       System.currentTimeMillis()
     )
 
-    val json = mapper.writeValueAsString(txn)
-    val record = new ProducerRecord[String, String](topic, txn.userId, json)
+    val record = new ProducerRecord[String, String](topic, txn.userId, mapper.writeValueAsString(txn))
 
-    producer.send(record, new Callback {
-      override def onCompletion(metadata: RecordMetadata, exception: Exception): Unit = {
-        if (exception != null)
-          println(s"❌ Error producing message: ${exception.getMessage}")
-        else
-          println(s"✅ Produced: $json")
-      }
-    })
+    try {
+      producer.send(record)
+      println(s"Produced: $txn")
+    } catch {
+      case e: Exception => println(s"❌ Error producing message: ${e.getMessage}")
+    }
 
-    Thread.sleep(1000)
+    Thread.sleep(500) // produce 2 messages per second for faster testing
   }
 }
