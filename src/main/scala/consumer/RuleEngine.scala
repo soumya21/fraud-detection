@@ -41,6 +41,7 @@ object RuleEngine {
 
   // ---------------- Apply all rules ----------------
   def applyRules(txn: Transaction): TransactionWithFlags = {
+    println(txn)
     val userTxns = txnHistory.getOrElse(txn.userId, List.empty)
 
     // ---- Rule 1: >5 txns in last 10 minutes ----

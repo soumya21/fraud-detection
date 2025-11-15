@@ -22,11 +22,11 @@ object TransactionProducer extends App {
 
   while (true) {
     val txn = Transaction(
-      java.util.UUID.randomUUID().toString,
+      java.util.UUID.randomUUID().toString,// card
       "user-" + Random.nextInt(10), // smaller user pool to trigger Rule1
       10.0 + Random.nextDouble() * 20000.0, // some large values to trigger Rule5
       locations(Random.nextInt(locations.size)), // random location
-      System.currentTimeMillis()
+      System.currentTimeMillis()//event time
     )
 
     val record = new ProducerRecord[String, String](topic, txn.userId, mapper.writeValueAsString(txn))
