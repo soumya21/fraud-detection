@@ -195,7 +195,7 @@ object FraudDetectionRule {
   // RULE 8 - LOCATION MISMATCH
   // ==================================================
   private def locationMismatch(txn: BankTransaction): Option[BankFraudAlert] = {
-    if (txn.accountBalance < 0)
+    if (txn.transactionLocation != txn.city)
       Some(
         BankFraudAlert(
           customerId = txn.customerId,
