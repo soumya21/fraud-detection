@@ -4,8 +4,9 @@ import org.apache.kafka.clients.producer._
 import org.apache.kafka.common.serialization.StringSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import common.Transaction
+import schema.Transaction
 import scala.util.Random
+
 
 object TransactionProducer extends App {
 

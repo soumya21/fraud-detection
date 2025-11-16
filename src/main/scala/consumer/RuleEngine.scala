@@ -1,6 +1,6 @@
 package consumer
 
-import common.Transaction
+import schema.Transaction
 import scala.collection.mutable
 import java.time.Instant
 

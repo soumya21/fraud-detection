@@ -3,9 +3,9 @@ package consumer
 import org.apache.kafka.clients.consumer.{KafkaConsumer, ConsumerRecords}
 import java.util.{Properties, Collections}
 import scala.collection.JavaConverters._
-import common.Transaction
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import schema.Transaction
 
 object FraudDetection extends App {
 
